@@ -1,0 +1,64 @@
+procedure edit(const fname: string);
+begin
+  Exec('/usr/bin/nano', fname);
+end;
+
+procedure editProfile;
+begin
+  edit('profile.txt');
+end;
+
+procedure hello(const name: string);
+begin
+  WriteLn('Hello, '+name+'!');
+end;
+
+procedure bash(const params: string);
+begin
+  Exec('/bin/bash', params);
+end;
+
+procedure xterm;
+begin
+  RunService('XTerm', '/usr/bin/xterm', '');
+end;
+
+procedure tail;
+begin
+  WriteLn('Tailing Supervisor log...');
+  Exec('/usr/bin/tail', '-n 10 Supervisor.log');
+end;
+
+procedure ls;
+begin
+  Exec('/bin/ls', '-lh '+GetPath);
+end;
+
+procedure cat(const fname: string);
+begin
+  Exec('/bin/cat', GetPath+'/'+fname);
+end;
+
+procedure build;
+begin
+  WriteLn('Building all binaries...');
+  Run('compile.psx');
+end;
+
+procedure mem;
+begin
+  SavePID('/tmp/Supervisor.pid');
+  Exec('/bin/bash', '-c "cat /proc/`cat /tmp/Supervisor.pid`/status|grep VmRSS"');
+end;
+
+procedure ps;
+begin
+  ListServices;
+  mem;
+end;
+
+procedure httpd;
+begin
+  StartHTTPServer(9001);
+end;
+

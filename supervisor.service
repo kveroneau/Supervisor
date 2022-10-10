@@ -1,0 +1,15 @@
+[Unit]
+Description=Supervisor process control system
+Documentation=http://iamkevin.ca/
+After=network.target
+
+[Service]
+ExecStart=/usr/local/bin/Supervisor -r /etc/Supervisor/startup.psx
+ExecStop=/usr/local/bin/Supervisor -s
+ExecReload=/use/local/bin/Supervisor -s reload
+KillMode=process
+Restart=on-failure
+RestartSec=50s
+
+[Install]
+WantedBy=multi-user.target

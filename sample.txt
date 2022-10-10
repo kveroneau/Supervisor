@@ -1,0 +1,7 @@
+begin
+  WriteLn('Hello World from Supervisor!');
+  RunService('XTerm','/usr/bin/xterm','');
+  StartHTTPServer(9001);
+  MonitorServices;
+end.
+
