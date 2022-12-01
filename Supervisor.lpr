@@ -6,8 +6,8 @@ uses
   {$IFDEF UNIX}
   cthreads, BaseUnix,
   {$ENDIF}
-  Classes, SysUtils, CustApp, pscmd, uPSComponent, pascalscriptfcl, dos, psrt,
-  process, StrUtils, httpsrv, httproute, HTTPDefs, logger;
+  Classes, SysUtils, CustApp, pscmd, uPSComponent, dos, psrt, process, StrUtils,
+  httpsrv, httproute, HTTPDefs, logger;
 
 const
   {$IFDEF DEBUG}
@@ -80,6 +80,7 @@ type
     procedure WaitOnProcs;
     procedure MonitorServices;
     function GetParams: string;
+    procedure EnterDir;
     procedure PSHalt;
     procedure CommandList;
     Procedure IndexRoute(ARequest: TRequest; AResponse: TResponse);
@@ -173,6 +174,7 @@ begin
   AddMethod(Sender, @TSupervisor.PSAlwaysRestart, 'procedure AlwaysRestart(const SName: string; value: boolean)');
   AddMethod(Sender, @TSupervisor.MonitorServices, 'procedure MonitorServices');
   AddMethod(Sender, @TSupervisor.GetParams, 'function GetParams: string');
+  AddMethod(Sender, @TSupervisor.EnterDir, 'procedure EnterDir;');
   AddMethod(Sender, @TSupervisor.CommandList, 'procedure Help');
 end;
 
@@ -199,6 +201,7 @@ begin
   Sender.RegisterDelphiMethod(Self, @TSupervisor.PSAlwaysRestart, 'ALWAYSRESTART', cdRegister);
   Sender.RegisterDelphiMethod(Self, @TSupervisor.MonitorServices, 'MONITORSERVICES', cdRegister);
   Sender.RegisterDelphiMethod(Self, @TSupervisor.GetParams, 'GETPARAMS', cdRegister);
+  Sender.RegisterDelphiMethod(Self, @TSupervisor.EnterDir, 'ENTERDIR', cdRegister);
 end;
 
 procedure TSupervisor.PSWriteLn(const s: string);
@@ -249,8 +252,13 @@ begin
 end;
 
 procedure TSupervisor.PSExec(const cmd, parms: string);
+var
+  path: string;
 begin
+  path:=GetCurrentDir;
+  SetCurrentDir(FPath);
   Exec(cmd, parms);
+  SetCurrentDir(path);
 end;
 
 procedure TSupervisor.RunService(const SName, cmd, parms: string);
@@ -505,6 +513,11 @@ end;
 function TSupervisor.GetParams: string;
 begin
   Result:=FParams;
+end;
+
+procedure TSupervisor.EnterDir;
+begin
+  SetCurrentDir(FPath);
 end;
 
 procedure TSupervisor.PSHalt;

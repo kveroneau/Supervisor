@@ -77,13 +77,6 @@
             </Debugging>
             <LinkSmart Value="True"/>
           </Linking>
-          <Other>
-            <ExecuteAfter>
-              <Command Value="docker build -t supervisor ."/>
-              <ShowAllMessages Value="True"/>
-              <CompileReasons Run="False"/>
-            </ExecuteAfter>
-          </Other>
         </CompilerOptions>
       </Item3>
     </BuildModes>
