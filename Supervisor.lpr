@@ -297,7 +297,13 @@ begin
   p:=TProcess(FProcList.FindComponent(SName));
   if not Assigned(p) then
     Exit;
-  if p.Terminate(1) then
+  FpKill(p.Handle, SIGTERM);
+  if not p.WaitOnExit(5000) then
+  begin
+    if p.Terminate(1) then
+      WriteLn('Service Terminated.');
+  end
+  else
     WriteLn('Service Stopped.');
   if not p.Active then
   begin
@@ -443,7 +449,7 @@ begin
     WriteLn('Supervisor Stop signal detected, closing down...');
     DeleteFile(SIGNAL_FILE);
     for i:=0 to FProcList.ComponentCount-1 do
-      TProcess(FProcList.Components[i]).Terminate(1);
+      FpKill(TProcess(FProcList.Components[i]).Handle, SIGTERM);
   end;
 end;
 
@@ -766,10 +772,16 @@ end;
 procedure TSupervisor.StopAllServices;
 var
   i: integer;
+  p: TProcess;
 begin
   FStopSig:=True;
   for i:=0 to FProcList.ComponentCount-1 do
-    TProcess(FProcList.Components[i]).Terminate(1);
+  begin
+    p:=TProcess(FProcList.Components[i]);
+    FpKill(p.Handle, SIGTERM);
+    if not p.WaitOnExit(5000) then
+      p.Terminate(1);
+  end;
   if Assigned(FCmdLine) then
     FCmdLine.StopLoop;
 end;
