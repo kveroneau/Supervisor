@@ -266,20 +266,21 @@ var
   s: TSupervisorService;
   p: TProcess;
 begin
-  s:=TSupervisorService.Create(FSvcList);
-  try
-    s.ProcList:=FProcList;
-    s.SvcList:=FSvcList;
-    s.Name:=SName;
-    s.Executable:=cmd;
-    s.Parameters:=parms;
-    s.CurrentDirectory:=FPath;
-    s.AlwaysRestart:=False;
-    s.RunUID:=FUID;
-    s.RunGID:=FGID;
-  except
+  if FSvcList.FindComponent(SName) <> Nil then
+  begin
     WriteLn('Service with this name already exists!');
+    Exit;
   end;
+  s:=TSupervisorService.Create(FSvcList);
+  s.ProcList:=FProcList;
+  s.SvcList:=FSvcList;
+  s.Name:=SName;
+  s.Executable:=cmd;
+  s.Parameters:=parms;
+  s.CurrentDirectory:=FPath;
+  s.AlwaysRestart:=False;
+  s.RunUID:=FUID;
+  s.RunGID:=FGID;
   try
     p:=s.GetProcess;
     p.Execute;
@@ -430,8 +431,6 @@ begin
 end;
 
 procedure TSupervisor.PSAlwaysRestart(const SName: string; value: boolean);
-var
-  s: TSupervisorService;
 begin
   TSupervisorService(FSvcList.FindComponent(SName)).AlwaysRestart:=value;
 end;
