@@ -286,7 +286,9 @@ begin
     p.Execute;
   except
     p.Free;
-    WriteLn('Unable to RunService, perhaps one is already running?');
+    WriteLn('Unable to RunService: '+Exception(ExceptObject).Message);
+    FSvcList.RemoveComponent(s);
+    s.Free;
   end;
 end;
 
@@ -565,7 +567,7 @@ begin
       Add('</table></body></html>');
     except
       AResponse.Code:=500;
-      AResponse.Content:='An error occured!';
+      AResponse.Content:='An error occured: '+Exception(ExceptObject).Message;
     end;
 end;
 
@@ -663,7 +665,7 @@ begin
       Add('</body></html>');
     except
       AResponse.Code:=500;
-      AResponse.Content:='Server Error!';
+      AResponse.Content:='Server Error: '+Exception(ExceptObject).Message;
     end;
 end;
 
